@@ -1,0 +1,45 @@
+﻿cmake_minimum_required (VERSION 3.8)
+
+set(CMAKE_CXX_STANDARD 17)
+
+
+# 设置多线程运行时选项
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT")
+# set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd")
+
+# 设置googletest 运行时为 MD, 默认为MT
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+
+
+# message(STATUS "CMAKE_GENERATOR_PLATFORM: " ${CMAKE_GENERATOR_PLATFORM})
+
+if(${CMAKE_GENERATOR_PLATFORM} MATCHES [xX]64)
+    set(CURRENT_PLATFORM "x64")
+elseif(${CMAKE_GENERATOR_PLATFORM} MATCHES [wW]in32)
+    set(CURRENT_PLATFORM "x86")
+endif()
+message(STATUS "CURRENT_PLATFORM: " ${CURRENT_PLATFORM})
+
+if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
+    set(BUILD_TYPE "debug")
+elseif(${CMAKE_BUILD_TYPE} MATCHES "Release")
+    set(BUILD_TYPE "release")
+endif()
+
+# set google test libraries path
+set(GOOGLE_TEST_LIB_PATH ${CMAKE_SOURCE_DIR}/../extern/googletest/lib)
+set(GOOGLE_TEST_LIB_PATH ${GOOGLE_TEST_LIB_PATH}/${CURRENT_PLATFORM}/${BUILD_TYPE})
+message(STATUS "GOOGLE_TEST_LIB_PATH: " ${GOOGLE_TEST_LIB_PATH})
+
+enable_testing()
+
+set(CMAKE_INSTALL_PREFIX  ${CMAKE_SOURCE_DIR}/${CMAKE_GENERATOR_PLATFORM}/${CMAKE_BUILD_TYPE})
+message(STATUS "CMAKE_INSTALL_PREFIX "  ${CMAKE_INSTALL_PREFIX})
+
+project(test)
+
+add_subdirectory(static)
+
+add_subdirectory(shared)
